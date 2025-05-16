@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+quickbite-backend/node_modules/
+quickbite-app/node_modules/
+
+# Environment variables
+.env
+quickbite-backend/.env
+quickbite-app/.env
+
+# Build artifacts
+dist/
+quickbite-app/dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Firebase
+firebase-debug.log
+
+# Supabase
+supabase/

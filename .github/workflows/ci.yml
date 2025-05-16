@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Frontend Dependencies
+      run: cd quickbite-app && npm install
+
+    - name: Run Frontend Lint
+      run: cd quickbite-app && npm run lint
+
+    - name: Run Frontend Tests
+      run: cd quickbite-app && npm test
+
+    - name: Install Backend Dependencies
+      run: cd quickbite-backend && npm install
+
+    - name: Run Backend Tests
+      run: cd quickbite-backend && npm test
