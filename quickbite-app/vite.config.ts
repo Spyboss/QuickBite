@@ -12,7 +12,15 @@ export default defineConfig({
         'react-admin',
         'ra-supabase',
         '@supabase/supabase-js'
-      ]
+      ],
+      // Fix for Rollup optional dependency error
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return
+        }
+        // Use default for everything else
+        warn(warning)
+      }
     },
     target: 'es2018',
     outDir: 'dist',
@@ -25,6 +33,9 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  optimizeDeps: {
+    exclude: ['@rollup/rollup-linux-x64-gnu'] // Exclude problematic optional dependency
   },
   server: {
     port: 5173,
