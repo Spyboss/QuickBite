@@ -5,6 +5,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [
     react(),
+    // Plugin to handle "use client" directives in MUI components
+    {
+      name: 'ignore-use-client-directive',
+      transform(code, id) {
+        if (code.includes('"use client"') || code.includes("'use client'")) {
+          // Remove the "use client" directive
+          return code.replace(/"use client";?/g, '').replace(/'use client';?/g, '');
+        }
+        return null;
+      }
+    },
     // Custom plugin to handle Rollup errors
     {
       name: 'handle-rollup-errors',
@@ -31,11 +42,9 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Don't mark these as external, as we need them for the build
+      // Only mark react-admin as external since we don't need it bundled
       external: [
-        'react-admin',
-        'ra-supabase',
-        '@supabase/supabase-js'
+        'react-admin'
       ],
       output: {
         // Implement manual chunks for better code splitting

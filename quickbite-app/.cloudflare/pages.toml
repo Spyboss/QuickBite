@@ -5,12 +5,12 @@
 [build]
   # Use a simpler build command that just builds the frontend
   command = "cd quickbite-app && npm install && npm run build"
-  node_version = "20.11.1"
+  node_version = "22.1.0"
   publish = "quickbite-app/dist"
 
 # Environment variables
 [build.environment]
-  NODE_VERSION = "20.11.1"
+  NODE_VERSION = "22.1.0"
   NPM_FLAGS = "--no-audit --prefer-offline"
   NODE_OPTIONS = "--max-old-space-size=4096"
   # Ensure optional dependencies are installed
