@@ -1,0 +1,20 @@
+# Wrangler configuration for Cloudflare Pages and Functions
+name = "quickbite"
+compatibility_date = "2025-05-18"
+
+# Pages configuration
+[site]
+bucket = "./quickbite-app/dist"
+
+# Environment variables
+[vars]
+NODE_VERSION = "20.11.1"
+
+# Production environment
+[env.production]
+workers_dev = false
+route = "quickbite.pages.dev/*"
+
+# Development environment
+[env.development]
+workers_dev = true

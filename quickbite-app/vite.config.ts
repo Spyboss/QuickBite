@@ -36,7 +36,17 @@ export default defineConfig({
         'react-admin',
         'ra-supabase',
         '@supabase/supabase-js'
-      ]
+      ],
+      output: {
+        // Implement manual chunks for better code splitting
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router', 'react-router-dom'],
+          'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          'vendor-firebase': ['firebase'],
+          'vendor-supabase': ['@supabase/supabase-js', 'ra-supabase'],
+          'vendor-utils': ['date-fns', 'zod', 'axios']
+        }
+      }
     },
     target: 'es2020',
     outDir: 'dist',
@@ -44,6 +54,8 @@ export default defineConfig({
     sourcemap: false,
     minify: true,
     emptyOutDir: true,
+    // Increase the chunk size warning limit to avoid unnecessary warnings
+    chunkSizeWarningLimit: 600,
     commonjsOptions: {
       // Prevent Rollup from trying to resolve native modules
       ignoreDynamicRequires: true,

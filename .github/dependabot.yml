@@ -1,0 +1,82 @@
+# Dependabot configuration file
+# See: https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the root directory
+    directory: "/"
+    # Check for updates once a week (on Monday)
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # Group all updates together
+    groups:
+      development-dependencies:
+        patterns:
+          - "*"
+    # Set reviewers for pull requests
+    reviewers:
+      - "Spyboss"
+    # Limit the number of open pull requests
+    open-pull-requests-limit: 5
+    # Specify labels for pull requests
+    labels:
+      - "dependencies"
+      - "npm"
+    # Ignore certain dependencies
+    ignore:
+      # Ignore major updates for these packages
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  # Enable version updates for npm in quickbite-app
+  - package-ecosystem: "npm"
+    directory: "/quickbite-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      development-dependencies:
+        patterns:
+          - "*"
+    reviewers:
+      - "Spyboss"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "frontend"
+
+  # Enable version updates for npm in quickbite-backend
+  - package-ecosystem: "npm"
+    directory: "/quickbite-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      development-dependencies:
+        patterns:
+          - "*"
+    reviewers:
+      - "Spyboss"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "backend"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    reviewers:
+      - "Spyboss"
+    labels:
+      - "dependencies"
+      - "github-actions"
