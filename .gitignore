@@ -2,17 +2,31 @@
 node_modules/
 quickbite-backend/node_modules/
 quickbite-app/node_modules/
+/.pnp
+.pnp.js
 
 # Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 quickbite-backend/.env
 quickbite-app/.env
 
 # Build artifacts
 dist/
+build/
 quickbite-app/dist/
+quickbite-app/build/
+
+# Testing
+/coverage
+quickbite-app/coverage/
+quickbite-backend/coverage/
 
 # Logs
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -21,10 +35,19 @@ lerna-debug.log*
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
 # Editor directories and files
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
 *.suo
 *.ntvs*
@@ -34,6 +57,21 @@ Thumbs.db
 
 # Firebase
 firebase-debug.log
+firebase-debug.*.log*
+ui-debug.log*
 
-# Supabase
-supabase/
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# ngrok (removed from project)
+quickbite-backend/ngrok-info.json
+quickbite-backend/setup-ngrok.js
+quickbite-backend/create-ngrok-info.js
+**/ngrok*.json
+**/ngrok*.log
+
+# Misc
+.vercel
+.netlify

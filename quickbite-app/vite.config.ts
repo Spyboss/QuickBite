@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg', 'offline.html'], // Added offline.html
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg', 'offline.html', 'firebase-messaging-sw.js'], // Added firebase-messaging-sw.js
       manifest: {
         name: 'QuickBite',
         short_name: 'QuickBite',
@@ -31,6 +31,16 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'any maskable',
           }
+        ],
+      },
+      strategies: 'injectManifest',
+      injectManifest: {
+        injectionPoint: undefined,
+        swSrc: 'public/firebase-messaging-sw.js',
+        swDest: 'dist/firebase-messaging-sw.js',
+        globDirectory: 'dist',
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg}'
         ],
       },
       workbox: {

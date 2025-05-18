@@ -10,13 +10,13 @@ import { NotificationProvider } from './context/NotificationContext';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter> {/* Wrap with BrowserRouter */}
-      <NotificationProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <NotificationProvider>
           <CartProvider>
             <App />
           </CartProvider>
-        </AuthProvider>
-      </NotificationProvider>
+        </NotificationProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

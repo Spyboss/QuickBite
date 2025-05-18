@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Container, Typography, /*List, ListItem, ListItemText,*/ Paper, Alert, /*Button,*/ Card, CardContent, Box, IconButton } from '@mui/material'; // Removed unused List, ListItem, ListItemText, Button
+import { Container, Typography, Paper, Alert, Card, CardContent, Box, IconButton, Button } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
-import { useAuth } from '../../hooks/useAuth'; // Updated import path
-import { useNotification } from '../../hooks/useNotification'; // Updated import path
+import { useAuth } from '../../hooks/useAuth';
+import { useNotification } from '../../hooks/useNotification';
 
 interface OrderItem { // Define a more specific type for order items
   id: number | string; // Menu item ID
@@ -31,19 +32,29 @@ const OrderStatus: React.FC = () => {
   const [statusUpdates, setStatusUpdates] = useState<{ id: number; status: string }[]>([]);
 
   const fetchOrders = useCallback(async () => {
-    if (authLoading) { // Check authLoading here as well
-        // setLoading(false); // Optionally set loading to false if auth is still loading
+    if (authLoading) {
         return;
     }
     setLoading(true);
     setError(null);
+
     try {
-      // Fetch orders for the current user or guest
-      const { data, error } = await supabase
+      let query = supabase
         .from('orders')
         .select('*')
-        .eq(user ? 'user_id' : 'user_id', user?.id || null) // Filter by user_id or null for guests
         .order('created_at', { ascending: false });
+
+      // If user is logged in, filter by user_id
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        // For guest users, show all orders with null user_id
+        // This is a simplified approach - in production, you might want to use
+        // a session ID or other identifier stored in localStorage
+        query = query.is('user_id', null);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw error;
@@ -58,23 +69,23 @@ const OrderStatus: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, authLoading]); // Added user and authLoading to useCallback dependencies
+  }, [user, authLoading]);
 
   useEffect(() => {
     fetchOrders(); // Call fetchOrders defined outside
 
     // Set up Realtime subscription for order status changes
     const orderSubscription = supabase
-      .channel('order_status_changes') // Channel name
+      .channel('order_status_changes')
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'orders',
-          filter: user ? `user_id=eq.${user.id}` : 'user_id=is.null', // Filter for relevant orders
+          filter: user ? `user_id=eq.${user.id}` : 'user_id=is.null',
         },
-        async (payload) => { // Made callback async
+        async (payload) => {
           const updatedOrder = payload.new as Order;
           // Update the order in the state
           setOrders((prevOrders) =>
@@ -91,9 +102,8 @@ const OrderStatus: React.FC = () => {
             console.log(`Order #${updatedOrder.id} is ready!`);
 
             // Trigger web push notification via backend
-            if (fcmToken) { // Only send if FCM token is available
+            if (fcmToken) {
               try {
-                // TODO: Replace with your backend URL if not running locally
                 const backendUrl = 'http://localhost:3001';
                 await fetch(`${backendUrl}/send-notification`, {
                   method: 'POST',
@@ -121,7 +131,7 @@ const OrderStatus: React.FC = () => {
     return () => {
       orderSubscription.unsubscribe();
     };
-  }, [fetchOrders, user, fcmToken]); // Dependencies for the main effect
+  }, [fetchOrders, user, fcmToken]);
 
   const handleRefresh = () => {
     fetchOrders(); // Now fetchOrders is in scope
@@ -154,50 +164,112 @@ const OrderStatus: React.FC = () => {
         </IconButton>
       </Box>
 
-      {/* Notification Area for "Order Ready" */}
-      {statusUpdates.map((update, index) => (
-        update.status === 'ready' && (
-          <Alert
-            key={index}
-            severity="success" // Green alert for "Ready"
-            sx={{ mb: 2 }}
-            onClose={() => {
-              setStatusUpdates((prevUpdates) => prevUpdates.filter((_, i) => i !== index));
-            }}
-          >
-            Order #{update.id} is Ready!
-          </Alert>
-        )
-      ))}
+      {(
+        <>
+          {statusUpdates.map((update, index) => (
+            update.status === 'ready' && (
+              <Alert
+                key={index}
+                severity="success"
+                sx={{ mb: 2 }}
+                onClose={() => {
+                  setStatusUpdates((prevUpdates) => prevUpdates.filter((_, i) => i !== index));
+                }}
+              >
+                Order #{update.id} is Ready!
+              </Alert>
+            )
+          ))}
 
-      {orders.length === 0 && !loading && (
-        <Paper elevation={1} sx={{ p: 3, textAlign: 'center' }}>
-          <Typography>No active orders found.</Typography>
-        </Paper>
+          {orders.length === 0 && !loading && (
+            <Paper
+              elevation={2}
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                borderRadius: 2,
+                backgroundColor: 'white',
+                maxWidth: '600px',
+                mx: 'auto',
+                mt: 4
+              }}
+            >
+              <Typography variant="h6" gutterBottom>No Orders Found</Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                You don't have any orders yet. Start by adding items to your cart!
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                component={RouterLink}
+                to="/"
+                sx={{ mt: 2 }}
+              >
+                Browse Menu
+              </Button>
+            </Paper>
+          )}
+
+          {orders.map((order) => (
+            <Card
+              key={order.id}
+              sx={{
+                mb: 2,
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                },
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" component="div" gutterBottom>
+                  Order #{order.id}
+                </Typography>
+                <Typography variant="body1" sx={{
+                  fontWeight: 'bold',
+                  color: order.status === 'ready' ? 'success.main' :
+                         order.status === 'preparing' ? 'info.main' :
+                         order.status === 'pending' ? 'warning.main' :
+                         order.status === 'delivered' ? 'success.dark' :
+                         'text.primary'
+                }}>
+                  Status: {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total: LKR {order.total.toFixed(2)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Payment: {order.payment_method === 'payhere' ? 'PayHere' : 'Cash on Pickup'}
+                </Typography>
+                <Typography variant="caption" display="block" color="text.secondary" sx={{mt:1}}>
+                  Placed on: {new Date(order.created_at).toLocaleString()}
+                </Typography>
+
+                {/* Order Items Section */}
+                {order.items && order.items.length > 0 && (
+                  <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Order Items:
+                    </Typography>
+                    {order.items.map((item, index) => (
+                      <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2">
+                          {item.quantity}x {item.name}
+                        </Typography>
+                        <Typography variant="body2">
+                          LKR {(item.price * item.quantity).toFixed(2)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </>
       )}
-
-      {orders.map((order) => (
-        <Card key={order.id} sx={{ mb: 2, boxShadow: 2 }}>
-          <CardContent>
-            <Typography variant="h6" component="div" gutterBottom>
-              Order #{order.id}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 'bold', color: order.status === 'ready' ? 'success.main' : 'text.primary' }}>
-              Status: {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Total: LKR {order.total.toFixed(2)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Payment: {order.payment_method === 'payhere' ? 'PayHere' : 'Cash on Pickup'}
-            </Typography>
-            <Typography variant="caption" display="block" color="text.secondary" sx={{mt:1}}>
-              Placed on: {new Date(order.created_at).toLocaleString()}
-            </Typography>
-            {/* Optional: Display items in a collapsible section or a modal */}
-          </CardContent>
-        </Card>
-      ))}
     </Container>
   );
 };

@@ -50,7 +50,7 @@ describe('Cart Component', () => {
   //     </BrowserRouter>
   //   );
   // };
-  
+
   const renderCartWithCustomHookState = (cartState: CartContextType) => { // Typed cartState
     mockUseCart.mockReturnValue(cartState);
     return render(
@@ -68,14 +68,16 @@ describe('Cart Component', () => {
 
 
   test('renders empty cart message', () => {
-    mockUseCart.mockReturnValue({
+    const mockCartState = {
       cartItems: [],
       total: 0,
       removeItemFromCart: jest.fn(),
-      addItemToCart: jest.fn(), // Add missing properties
-      clearCart: jest.fn(),     // Add missing properties
-    });
-    renderCartWithCustomHookState({ cartItems: [], total: 0, removeItemFromCart: jest.fn(), addItemToCart: jest.fn(), clearCart: jest.fn() });
+      addItemToCart: jest.fn(),
+      updateItemQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    };
+    mockUseCart.mockReturnValue(mockCartState);
+    renderCartWithCustomHookState(mockCartState);
     expect(screen.getByText(/Your cart is empty/i)).toBeInTheDocument();
   });
 
@@ -85,37 +87,66 @@ describe('Cart Component', () => {
       { id: 2, name: 'Test Pizza', price: 1200, quantity: 1 },
     ];
     const mockTotal = 2200;
-    mockUseCart.mockReturnValue({
+    const mockCartState = {
       cartItems: mockItems,
       total: mockTotal,
       removeItemFromCart: jest.fn(),
       addItemToCart: jest.fn(),
+      updateItemQuantity: jest.fn(),
       clearCart: jest.fn(),
-    });
-    renderCartWithCustomHookState({ cartItems: mockItems, total: mockTotal, removeItemFromCart: jest.fn(), addItemToCart: jest.fn(), clearCart: jest.fn() });
+    };
+    mockUseCart.mockReturnValue(mockCartState);
+    renderCartWithCustomHookState(mockCartState);
 
     expect(screen.getByText('Test Burger')).toBeInTheDocument();
-    expect(screen.getByText('Quantity: 2 - LKR 1000.00')).toBeInTheDocument();
+    expect(screen.getByText('LKR 500.00 each')).toBeInTheDocument();
     expect(screen.getByText('Test Pizza')).toBeInTheDocument();
-    expect(screen.getByText('Quantity: 1 - LKR 1200.00')).toBeInTheDocument();
+    expect(screen.getByText('LKR 1200.00 each')).toBeInTheDocument();
     expect(screen.getByText(`Total: LKR ${mockTotal.toFixed(2)}`)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Proceed to Checkout/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /PROCEED TO CHECKOUT/i })).toBeInTheDocument();
   });
 
   test('calls removeItemFromCart when remove button is clicked', () => {
     const mockRemoveItem = jest.fn();
     const mockItems = [{ id: 1, name: 'Test Burger', price: 500, quantity: 1 }];
-    mockUseCart.mockReturnValue({
+    const mockCartState = {
       cartItems: mockItems,
       total: 500,
       removeItemFromCart: mockRemoveItem,
       addItemToCart: jest.fn(),
+      updateItemQuantity: jest.fn(),
       clearCart: jest.fn(),
-    });
-    renderCartWithCustomHookState({ cartItems: mockItems, total: 500, removeItemFromCart: mockRemoveItem, addItemToCart: jest.fn(), clearCart: jest.fn() });
+    };
+    mockUseCart.mockReturnValue(mockCartState);
+    renderCartWithCustomHookState(mockCartState);
 
     const removeButtons = screen.getAllByRole('button', { name: /delete/i }); // MUI IconButton for delete
     fireEvent.click(removeButtons[0]);
     expect(mockRemoveItem).toHaveBeenCalledWith(1);
+  });
+
+  test('calls updateItemQuantity when quantity buttons are clicked', () => {
+    const mockUpdateQuantity = jest.fn();
+    const mockItems = [{ id: 1, name: 'Test Burger', price: 500, quantity: 2 }];
+    const mockCartState = {
+      cartItems: mockItems,
+      total: 1000,
+      removeItemFromCart: jest.fn(),
+      addItemToCart: jest.fn(),
+      updateItemQuantity: mockUpdateQuantity,
+      clearCart: jest.fn(),
+    };
+    mockUseCart.mockReturnValue(mockCartState);
+    renderCartWithCustomHookState(mockCartState);
+
+    // Test increase quantity
+    const increaseButton = screen.getByRole('button', { name: /increase quantity/i });
+    fireEvent.click(increaseButton);
+    expect(mockUpdateQuantity).toHaveBeenCalledWith(1, 3);
+
+    // Test decrease quantity
+    const decreaseButton = screen.getByRole('button', { name: /decrease quantity/i });
+    fireEvent.click(decreaseButton);
+    expect(mockUpdateQuantity).toHaveBeenCalledWith(1, 1);
   });
 });

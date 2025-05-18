@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Admin, Resource } from 'react-admin';
-import { createClient } from '@supabase/supabase-js';
 import { supabaseDataProvider } from 'ra-supabase';
 import { supabase } from './supabaseClient';
 
@@ -16,11 +15,11 @@ import LoginPage from './admin/LoginPage'; // Import LoginPage
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Create the Supabase data provider
+// Create the Supabase data provider using the existing client
 const dataProvider = supabaseDataProvider({
   instanceUrl: supabaseUrl,
   apiKey: supabaseAnonKey,
-  supabaseClient: createClient(supabaseUrl, supabaseAnonKey),
+  supabaseClient: supabase, // Use the existing client instance
 });
 
 // TODO: Add Edit and Create components for orders and menu
@@ -56,7 +55,7 @@ const AdminDashboard: React.FC = () => {
     };
 
     checkAdminAuth();
-    
+
     const { data: authListener } = supabase.auth.onAuthStateChange(() => { // Removed event, session
       // Re-check admin status on auth changes (login/logout)
       checkAdminAuth();

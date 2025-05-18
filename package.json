@@ -1,0 +1,52 @@
+{
+  "name": "quickbite",
+  "version": "1.0.0",
+  "description": "Food ordering application for Sri Lanka",
+  "private": true,
+  "workspaces": [
+    "quickbite-app",
+    "quickbite-backend"
+  ],
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:frontend": "cd quickbite-app && npm run dev",
+    "start:backend": "cd quickbite-backend && npm run dev",
+    "build": "concurrently \"npm run build:frontend\" \"npm run build:backend\"",
+    "build:frontend": "cd quickbite-app && npm run build",
+    "build:backend": "cd quickbite-backend && npm run build",
+    "test": "concurrently \"npm run test:frontend\" \"npm run test:backend\"",
+    "test:frontend": "cd quickbite-app && npm test",
+    "test:backend": "cd quickbite-backend && npm test",
+    "lint": "concurrently \"npm run lint:frontend\" \"npm run lint:backend\"",
+    "lint:frontend": "cd quickbite-app && npm run lint",
+    "lint:backend": "cd quickbite-backend && npm run lint",
+    "setup": "npm install && concurrently \"npm run setup:frontend\" \"npm run setup:backend\"",
+    "setup:frontend": "cd quickbite-app && npm install",
+    "setup:backend": "cd quickbite-backend && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Spyboss/QuickBite.git"
+  },
+  "keywords": [
+    "food-ordering",
+    "restaurant",
+    "react",
+    "express",
+    "supabase",
+    "payhere"
+  ],
+  "author": "Uminda H.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Spyboss/QuickBite/issues"
+  },
+  "homepage": "https://github.com/Spyboss/QuickBite#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

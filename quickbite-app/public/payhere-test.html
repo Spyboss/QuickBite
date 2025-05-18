@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayHere Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>PayHere Sandbox Test</h1>
+    <p>This page tests the PayHere sandbox integration with the standard test merchant ID.</p>
+
+    <div class="form-container">
+        <h2>Test Payment</h2>
+        <p>Click the button below to test a payment with PayHere sandbox:</p>
+
+        <button id="payhere-button">Pay with PayHere</button>
+        <p id="status-message"></p>
+    </div>
+
+    <script>
+        // Function to generate hash from backend
+        async function generateHash(orderId, amount, currency) {
+            try {
+                const response = await fetch('http://localhost:3001/generate-payment-hash', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        amount: amount,
+                        currency: currency
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to generate hash: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data.hash;
+            } catch (error) {
+                console.error('Error generating hash:', error);
+                document.getElementById('status-message').textContent = 'Error generating hash: ' + error.message;
+                return null;
+            }
+        }
+
+        document.getElementById('payhere-button').addEventListener('click', async function() {
+            document.getElementById('status-message').textContent = 'Preparing payment...';
+
+            // Create a form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://sandbox.payhere.lk/pay/checkout';
+            form.target = '_blank';
+
+            // PayHere merchant ID
+            const merchantId = '1230461';
+
+            // Generate order ID
+            const orderId = 'TEST' + Date.now().toString();
+            const amount = '1000.00';
+            const currency = 'LKR';
+
+            // Payment data
+            const paymentData = {
+                merchant_id: merchantId,
+                return_url: window.location.href + '?status=success',
+                cancel_url: window.location.href + '?status=canceled',
+                notify_url: 'http://localhost:3001/payhere-notify',
+                order_id: orderId,
+                items: 'Test Item',
+                currency: currency,
+                amount: amount,
+                first_name: 'Test',
+                last_name: 'User',
+                email: 'test@example.com',
+                phone: '0771234567',
+                address: '123 Test St',
+                city: 'Colombo',
+                country: 'Sri Lanka'
+            };
+
+            // Generate hash
+            document.getElementById('status-message').textContent = 'Generating secure hash...';
+            const hash = await generateHash(orderId, amount, currency);
+
+            if (hash) {
+                document.getElementById('status-message').textContent = 'Hash generated successfully. Proceeding to payment...';
+                paymentData.hash = hash;
+            } else {
+                document.getElementById('status-message').textContent = 'Failed to generate hash. Payment may fail.';
+            }
+
+            // Add domain field
+            const domainInput = document.createElement('input');
+            domainInput.type = 'hidden';
+            domainInput.name = 'domain';
+            domainInput.value = window.location.hostname || 'localhost';
+            form.appendChild(domainInput);
+
+            // Add form fields
+            for (const key in paymentData) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = paymentData[key];
+                form.appendChild(input);
+            }
+
+            // Append form to body
+            document.body.appendChild(form);
+
+            // Submit form
+            form.submit();
+
+            // Remove form after submission
+            setTimeout(() => {
+                if (document.body.contains(form)) {
+                    document.body.removeChild(form);
+                }
+            }, 100);
+        });
+
+        // Check for success or cancel status in URL
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+
+            if (status === 'success') {
+                alert('Payment successful!');
+            } else if (status === 'canceled') {
+                alert('Payment canceled.');
+            }
+        };
+    </script>
+</body>
+</html>
