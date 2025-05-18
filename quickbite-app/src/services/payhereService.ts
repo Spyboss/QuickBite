@@ -8,7 +8,7 @@
 
 // PayHere credentials from environment variables
 const MERCHANT_ID = import.meta.env.VITE_PAYHERE_MERCHANT_ID;
-const APP_ID = import.meta.env.VITE_PAYHERE_APP_ID;
+// APP_ID is stored in environment variables but not used in this file
 
 // PayHere API URLs
 const SANDBOX_URL = 'https://sandbox.payhere.lk/pay/checkout';

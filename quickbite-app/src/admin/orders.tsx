@@ -1,4 +1,4 @@
-import React from 'react';
+// React is automatically imported by the JSX transform
 import {
   List,
   Datagrid,

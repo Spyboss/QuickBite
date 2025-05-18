@@ -33,7 +33,7 @@ function App() {
   const { cartItems } = useCart(); // Get cart items for badge
   const navigate = useNavigate();
   const { isMobile } = useStyles();
-  const [notificationError, setNotificationError] = useState(false);
+  const [, setNotificationError] = useState(false); // Used in useEffect
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
   // Check for notification support and service worker errors

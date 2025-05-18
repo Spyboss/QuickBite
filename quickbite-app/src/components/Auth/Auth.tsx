@@ -104,7 +104,7 @@ const Auth: React.FC = () => {
       if (email.includes('test')) {
         // This is a development shortcut - in production, always use real authentication
         console.log('Using test account for development');
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: 'test@example.com',
           password: 'password123'
         });

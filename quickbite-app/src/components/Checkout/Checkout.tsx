@@ -205,7 +205,7 @@ const Checkout: React.FC = () => {
                     localStorage.setItem('last_order_id', currentOrderId.toString());
                     localStorage.setItem('last_order_timestamp', Date.now().toString());
                   })
-                  .catch(error => {
+                  .then(undefined, (error: Error) => {
                     console.error('Error updating order status:', error);
                   });
               }
@@ -355,7 +355,7 @@ const Checkout: React.FC = () => {
 
                               // Initiate payment
                               payhereService.initiatePayment(paymentData)
-                                .catch(error => {
+                                .then(undefined, (error: Error) => {
                                   console.error('Error reopening PayHere window:', error);
                                   alert('Error reopening PayHere window. Please try again.');
                                 });
@@ -388,7 +388,7 @@ const Checkout: React.FC = () => {
                               localStorage.setItem('last_order_timestamp', Date.now().toString());
                               alert('Payment marked as successful!');
                             })
-                            .catch(error => {
+                            .then(undefined, (error: Error) => {
                               console.error('Error updating order status:', error);
                               alert('Error marking payment as successful. Please try again.');
                             });
