@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/Spyboss/QuickBite#readme",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^9.1.2"
   },
   "engines": {
     "node": ">=20.11.1",
