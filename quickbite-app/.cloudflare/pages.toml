@@ -1,0 +1,13 @@
+# Cloudflare Pages configuration
+# https://developers.cloudflare.com/pages/platform/build-configuration
+
+# Enforce Node.js version
+[build]
+  command = "npm run build"
+  node_version = "18.18.0"
+  publish = "dist"
+
+# Environment variables
+[build.environment]
+  NODE_VERSION = "18.18.0"
+  NPM_FLAGS = "--no-optional --omit=optional --no-audit"
