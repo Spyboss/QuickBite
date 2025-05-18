@@ -112,7 +112,11 @@ const Auth: React.FC = () => {
         if (error) {
           // If test account fails, try anonymous login
           console.log('Test account failed, trying anonymous login');
-          const { error: anonError } = await supabase.auth.signInAnonymously();
+          // Use signInWithPassword with a test account instead of anonymous login
+          const { error: anonError } = await supabase.auth.signInWithPassword({
+            email: 'guest@example.com',
+            password: 'guest123'
+          });
           if (anonError) {
             setError('Authentication failed. Please try again later.');
             console.error('Anonymous auth error:', anonError);
@@ -179,7 +183,11 @@ const Auth: React.FC = () => {
 
     try {
       console.log('Attempting anonymous login...');
-      const { data, error } = await supabase.auth.signInAnonymously();
+      // Use signInWithPassword with a guest account instead of anonymous login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: 'guest@example.com',
+        password: 'guest123'
+      });
 
       if (error) {
         console.error('Anonymous login error:', error);
