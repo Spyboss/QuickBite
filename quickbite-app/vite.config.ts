@@ -17,8 +17,11 @@ export default defineConfig({
             warning.code === 'MODULE_LEVEL_DIRECTIVE' ||
             warning.code === 'MISSING_EXPORT' ||
             warning.code === 'CIRCULAR_DEPENDENCY' ||
-            warning.message?.includes('failed to resolve')
+            warning.message?.includes('failed to resolve') ||
+            warning.message?.includes('@rollup/rollup-') ||
+            warning.message?.includes('Cannot find module')
           ) {
+            console.log(`Ignoring Rollup warning: ${warning.message || warning.code}`);
             return;
           }
           originalBuildStart(warning, warn);

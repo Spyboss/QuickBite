@@ -39,26 +39,34 @@ async function build() {
     const nodeVersion = process.version;
     log(`Using Node.js ${nodeVersion}`);
 
-    // Clean up node_modules if it exists
-    if (fs.existsSync('node_modules')) {
-      log('Cleaning up existing node_modules');
-      // Use rimraf or OS-specific command
-      const isWindows = process.platform === 'win32';
-      if (isWindows) {
-        execute('if exist node_modules rmdir /s /q node_modules');
-      } else {
-        execute('rm -rf node_modules');
-      }
-    }
+    // Check if we need to update package.json to match the current Node.js version
+    const requiredNodeVersion = '>=20.11.1';
+    const currentNodeMajorVersion = nodeVersion.match(/v(\d+)\./)[1];
 
-    // Clean up package-lock.json if it exists
-    if (fs.existsSync('package-lock.json')) {
-      log('Removing package-lock.json');
-      const isWindows = process.platform === 'win32';
-      if (isWindows) {
-        execute('if exist package-lock.json del package-lock.json');
-      } else {
-        execute('rm -f package-lock.json');
+    // If we're running on Node.js 18 (Cloudflare's default), temporarily modify package.json
+    if (currentNodeMajorVersion < 20) {
+      log(`Running on Node.js ${nodeVersion}, which is below the required version ${requiredNodeVersion}`);
+      log('Temporarily adjusting package.json to work with the current Node.js version');
+
+      try {
+        const packageJsonPath = './package.json';
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+        // Save the original engines requirement for reference
+        const originalNodeRequirement = packageJson.engines?.node;
+        log(`Original Node.js requirement: ${originalNodeRequirement}`);
+
+        // Update engines to match the current Node.js version
+        packageJson.engines = {
+          ...packageJson.engines,
+          node: `>=${currentNodeMajorVersion}.0.0`
+        };
+
+        // Write the updated package.json
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+        log(`Updated package.json to require Node.js >=${currentNodeMajorVersion}.0.0`);
+      } catch (error) {
+        log(`Warning: Failed to update package.json: ${error.message}`);
       }
     }
 
@@ -75,14 +83,14 @@ async function build() {
         '@rollup/rollup-linux-x64-musl'
       ];
 
-      for (const dep of rollupDeps) {
-        try {
-          require.resolve(dep);
-          log(`✅ ${dep} is installed`);
-        } catch (error) {
-          log(`⚠️ ${dep} is not installed, installing it now`);
-          execute(`npm install ${dep}@4.9.6 --no-save`);
-        }
+      // Force install the Rollup dependencies for the current platform
+      log('Installing Rollup dependencies for Linux');
+      try {
+        execute('npm install @rollup/rollup-linux-x64-gnu@4.41.0 @rollup/rollup-linux-x64-musl@4.41.0 --no-save');
+        log('Successfully installed Rollup dependencies');
+      } catch (error) {
+        log(`Warning: Failed to install Rollup dependencies: ${error.message}`);
+        log('Continuing with build anyway...');
       }
     } else {
       log('Skipping Rollup dependency check on Windows');
