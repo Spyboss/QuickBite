@@ -17,8 +17,6 @@ export default defineConfig({
             warning.code === 'MODULE_LEVEL_DIRECTIVE' ||
             warning.code === 'MISSING_EXPORT' ||
             warning.code === 'CIRCULAR_DEPENDENCY' ||
-            warning.message?.includes('@rollup/rollup-linux') ||
-            warning.message?.includes('Cannot find module') ||
             warning.message?.includes('failed to resolve')
           ) {
             return;
@@ -30,18 +28,14 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
+      // Don't mark these as external, as we need them for the build
       external: [
         'react-admin',
         'ra-supabase',
-        '@supabase/supabase-js',
-        '@rollup/rollup-linux-x64-gnu',
-        '@rollup/rollup-darwin-x64',
-        '@rollup/rollup-linux-x64-musl',
-        '@rollup/rollup-win32-x64-msvc',
-        '@rollup/rollup-darwin-arm64'
+        '@supabase/supabase-js'
       ]
     },
-    target: 'es2018',
+    target: 'es2020',
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
@@ -57,15 +51,6 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
-  },
-  optimizeDeps: {
-    exclude: [
-      '@rollup/rollup-linux-x64-gnu',
-      '@rollup/rollup-darwin-x64',
-      '@rollup/rollup-linux-x64-musl',
-      '@rollup/rollup-win32-x64-msvc',
-      '@rollup/rollup-darwin-arm64'
-    ]
   },
   server: {
     port: 5173,

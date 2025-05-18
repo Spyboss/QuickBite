@@ -3,11 +3,15 @@
 
 # Enforce Node.js version
 [build]
-  command = "npm run build"
-  node_version = "18.18.0"
+  # Use a clean build approach with our custom script
+  command = "npm ci && node cloudflare-build.js"
+  node_version = "20.11.1"
   publish = "dist"
 
 # Environment variables
 [build.environment]
-  NODE_VERSION = "18.18.0"
-  NPM_FLAGS = "--no-optional --omit=optional --no-audit"
+  NODE_VERSION = "20.11.1"
+  NPM_FLAGS = "--no-audit --prefer-offline"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  # Ensure optional dependencies are installed
+  NPM_CONFIG_OPTIONAL = "true"
