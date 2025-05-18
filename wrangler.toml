@@ -6,6 +6,9 @@ compatibility_date = "2025-05-18"
 [site]
 bucket = "./quickbite-app/dist"
 
+# Required for Cloudflare Pages
+pages_build_output_dir = "quickbite-app/dist"
+
 # Environment variables
 [vars]
 NODE_VERSION = "20.11.1"
