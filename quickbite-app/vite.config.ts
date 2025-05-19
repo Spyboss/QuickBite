@@ -91,11 +91,21 @@ export default defineConfig({
     }
   },
   resolve: {
-    alias: {
-      '@': '/src',
+    alias: [
+      { find: '@', replacement: '/src' },
       // Use our shim for ra-ui-materialui
-      'ra-ui-materialui': '/src/shims/ra-ui-materialui.js'
-    }
+      { find: 'ra-ui-materialui', replacement: '/src/shims/ra-ui-materialui.js' },
+      // Also handle the case where it's imported from node_modules
+      { find: /^ra-ui-materialui$/, replacement: '/src/shims/ra-ui-materialui.js' },
+      // Use our shim for ra-core
+      { find: 'ra-core', replacement: '/src/shims/ra-core.js' },
+      // Also handle the case where it's imported from node_modules
+      { find: /^ra-core$/, replacement: '/src/shims/ra-core.js' },
+      // Use our shim for react-admin
+      { find: 'react-admin', replacement: '/src/shims/react-admin.js' },
+      // Also handle the case where it's imported from node_modules
+      { find: /^react-admin$/, replacement: '/src/shims/react-admin.js' }
+    ]
   },
   server: {
     port: 5173,
