@@ -75,11 +75,9 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router', 'react-router-dom'],
           'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          'vendor-firebase': ['firebase'],
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-utils': ['date-fns', 'zod', 'axios'],
-          'vendor-shims': [
-            './src/shims/firebase.js',
+          'vendor-ra-shims': [
             './src/shims/ra-core.js',
             './src/shims/ra-ui-materialui.js',
             './src/shims/react-admin.js'
