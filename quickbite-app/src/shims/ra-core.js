@@ -1,6 +1,6 @@
 /**
  * Shim for ra-core
- * 
+ *
  * This file provides empty implementations of the functions and components from ra-core
  * that are being imported by ra-supabase.
  */
@@ -64,6 +64,14 @@ export const useCreateController = () => ({});
 export const useShowContext = () => ({});
 export const useShowController = () => ({});
 
+// Additional functions that were missing
+export const required = () => '';
+export const fetchUtils = {
+  fetchJson: async () => ({ json: {} }),
+  createHeadersFromOptions: () => ({}),
+  queryParameters: () => ''
+};
+
 // Create empty components
 export const CoreAdmin = createComponent('CoreAdmin');
 export const CoreResource = createComponent('CoreResource');
@@ -87,6 +95,19 @@ export const ListContext = createComponent('ListContext');
 export const EditContext = createComponent('EditContext');
 export const CreateContext = createComponent('CreateContext');
 export const ShowContext = createComponent('ShowContext');
+
+// Additional components that were missing
+export const CreateBase = createComponent('CreateBase');
+export const EditBase = createComponent('EditBase');
+export const ListBase = createComponent('ListBase');
+export const ShowBase = createComponent('ShowBase');
+export class InferredElement {
+  constructor(type, props, children) {
+    this.type = type;
+    this.props = props || {};
+    this.children = children;
+  }
+}
 
 // Export a default object with all the functions and components
 export default {

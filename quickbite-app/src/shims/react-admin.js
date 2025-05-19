@@ -44,10 +44,20 @@ Resource.defaultProps = {
   show: null
 };
 
+// Additional components and functions that were missing
+export const AdminContext = createComponent('AdminContext');
+export const AdminUI = createComponent('AdminUI');
+export const CustomRoutes = createComponent('CustomRoutes');
+export const mergeTranslations = (...translations) => ({});
+
 // Export a default object with all the components and functions
 export default {
   ...raCore,
   ...raUiMaterialui,
   Admin,
-  Resource
+  Resource,
+  AdminContext,
+  AdminUI,
+  CustomRoutes,
+  mergeTranslations
 };

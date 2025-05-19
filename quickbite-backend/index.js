@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 const admin = require('firebase-admin');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+// Use a different approach for swagger documentation
 const fs = require('fs');
 const path = require('path');
 
@@ -68,38 +68,36 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Swagger Definition
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'QuickBite API',
-      version: '1.0.0',
-      description: 'API documentation for the QuickBite application backend.',
-    },
-    servers: [
-      {
-        url: `http://localhost:${port}`,
-        description: 'Development server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
-    },
-    security: [{
-      bearerAuth: []
-    }]
+// Swagger documentation setup - using static JSON file instead of swagger-jsdoc
+const swaggerDocument = {
+  openapi: '3.0.0',
+  info: {
+    title: 'QuickBite API',
+    version: '1.0.0',
+    description: 'API documentation for the QuickBite application backend.',
   },
-  apis: ['./routes/*.js'], // Path to the API docs
+  servers: [
+    {
+      url: `http://localhost:${port}`,
+      description: 'Development server',
+    },
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT'
+      }
+    }
+  },
+  security: [{
+    bearerAuth: []
+  }],
+  paths: {} // We'll add paths manually or from route files
 };
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Mount API routes
 app.use('/api/v1', routes);
