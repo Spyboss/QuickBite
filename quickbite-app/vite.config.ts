@@ -16,6 +16,18 @@ export default defineConfig({
         return null;
       }
     },
+    // Custom plugin to handle missing modules
+    {
+      name: 'handle-missing-modules',
+      resolveId(id) {
+        // If the module is one of the React Admin modules we've marked as external,
+        // return a virtual module that exports an empty object
+        if (id === 'ra-ui-materialui' || id === 'ra-core' || id === 'ra-language-english') {
+          return { id, external: true };
+        }
+        return null;
+      }
+    },
     // Custom plugin to handle Rollup errors
     {
       name: 'handle-rollup-errors',
@@ -30,7 +42,11 @@ export default defineConfig({
             warning.code === 'CIRCULAR_DEPENDENCY' ||
             warning.message?.includes('failed to resolve') ||
             warning.message?.includes('@rollup/rollup-') ||
-            warning.message?.includes('Cannot find module')
+            warning.message?.includes('Cannot find module') ||
+            warning.message?.includes('ra-ui-materialui') ||
+            warning.message?.includes('ra-core') ||
+            warning.message?.includes('ra-language-english') ||
+            warning.message?.includes('react-admin')
           ) {
             console.log(`Ignoring Rollup warning: ${warning.message || warning.code}`);
             return;
@@ -42,16 +58,20 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Don't mark any packages as external to ensure all dependencies are bundled
-      external: [],
+      // Mark React Admin packages as external to avoid bundling issues
+      external: [
+        'react-admin',
+        'ra-ui-materialui',
+        'ra-core',
+        'ra-language-english'
+      ],
       output: {
         // Implement manual chunks for better code splitting
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router', 'react-router-dom'],
           'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
           'vendor-firebase': ['firebase'],
-          'vendor-admin': ['react-admin', 'ra-ui-materialui', 'ra-core', 'ra-language-english'],
-          'vendor-supabase': ['@supabase/supabase-js', 'ra-supabase'],
+          'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-utils': ['date-fns', 'zod', 'axios']
         }
       }
@@ -72,7 +92,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src'
+      '@': '/src',
+      // Use our shim for ra-ui-materialui
+      'ra-ui-materialui': '/src/shims/ra-ui-materialui.js'
     }
   },
   server: {
