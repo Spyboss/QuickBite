@@ -105,7 +105,19 @@ export default defineConfig({
       // Use our shim for react-admin
       { find: 'react-admin', replacement: path.resolve(__dirname, 'src/shims/react-admin.js') },
       // Also handle the case where it's imported from node_modules
-      { find: /^react-admin$/, replacement: path.resolve(__dirname, 'src/shims/react-admin.js') }
+      { find: /^react-admin$/, replacement: path.resolve(__dirname, 'src/shims/react-admin.js') },
+      // Use our shim for firebase
+      { find: 'firebase', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
+      // Also handle the case where it's imported from node_modules
+      { find: /^firebase$/, replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
+      // Handle firebase/app
+      { find: 'firebase/app', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
+      // Handle firebase/auth
+      { find: 'firebase/auth', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
+      // Handle firebase/messaging
+      { find: 'firebase/messaging', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
+      // Handle firebase/analytics
+      { find: 'firebase/analytics', replacement: path.resolve(__dirname, 'src/shims/firebase.js') }
     ]
   },
   server: {
