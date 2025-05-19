@@ -8,7 +8,7 @@ export default defineConfig({
     // Plugin to handle "use client" directives in MUI components
     {
       name: 'ignore-use-client-directive',
-      transform(code, id) {
+      transform(code) {
         if (code.includes('"use client"') || code.includes("'use client'")) {
           // Remove the "use client" directive
           return code.replace(/"use client";?/g, '').replace(/'use client';?/g, '');
@@ -42,16 +42,15 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Only mark react-admin as external since we don't need it bundled
-      external: [
-        'react-admin'
-      ],
+      // Don't mark any packages as external to ensure all dependencies are bundled
+      external: [],
       output: {
         // Implement manual chunks for better code splitting
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router', 'react-router-dom'],
           'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
           'vendor-firebase': ['firebase'],
+          'vendor-admin': ['react-admin', 'ra-ui-materialui', 'ra-core', 'ra-language-english'],
           'vendor-supabase': ['@supabase/supabase-js', 'ra-supabase'],
           'vendor-utils': ['date-fns', 'zod', 'axios']
         }
