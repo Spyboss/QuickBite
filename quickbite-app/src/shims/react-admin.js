@@ -1,17 +1,17 @@
 /**
  * Shim for react-admin
- * 
+ *
  * This file provides empty implementations of the components and functions from react-admin
  * that are being imported by ra-supabase.
  */
 
 // Import our shims
-import * as raCore from './ra-core';
-import * as raUiMaterialui from './ra-ui-materialui';
+import * as raCore from './ra-core.js';
+import * as raUiMaterialui from './ra-ui-materialui.js';
 
 // Re-export everything from ra-core and ra-ui-materialui
-export * from './ra-core';
-export * from './ra-ui-materialui';
+export * from './ra-core.js';
+export * from './ra-ui-materialui.js';
 
 // Create a factory function for components
 const createComponent = (name) => {

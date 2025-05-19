@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -92,19 +93,19 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: '@', replacement: '/src' },
+      { find: '@', replacement: path.resolve(__dirname, 'src') },
       // Use our shim for ra-ui-materialui
-      { find: 'ra-ui-materialui', replacement: '/src/shims/ra-ui-materialui.js' },
+      { find: 'ra-ui-materialui', replacement: path.resolve(__dirname, 'src/shims/ra-ui-materialui.js') },
       // Also handle the case where it's imported from node_modules
-      { find: /^ra-ui-materialui$/, replacement: '/src/shims/ra-ui-materialui.js' },
+      { find: /^ra-ui-materialui$/, replacement: path.resolve(__dirname, 'src/shims/ra-ui-materialui.js') },
       // Use our shim for ra-core
-      { find: 'ra-core', replacement: '/src/shims/ra-core.js' },
+      { find: 'ra-core', replacement: path.resolve(__dirname, 'src/shims/ra-core.js') },
       // Also handle the case where it's imported from node_modules
-      { find: /^ra-core$/, replacement: '/src/shims/ra-core.js' },
+      { find: /^ra-core$/, replacement: path.resolve(__dirname, 'src/shims/ra-core.js') },
       // Use our shim for react-admin
-      { find: 'react-admin', replacement: '/src/shims/react-admin.js' },
+      { find: 'react-admin', replacement: path.resolve(__dirname, 'src/shims/react-admin.js') },
       // Also handle the case where it's imported from node_modules
-      { find: /^react-admin$/, replacement: '/src/shims/react-admin.js' }
+      { find: /^react-admin$/, replacement: path.resolve(__dirname, 'src/shims/react-admin.js') }
     ]
   },
   server: {
