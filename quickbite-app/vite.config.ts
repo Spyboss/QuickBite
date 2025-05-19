@@ -17,14 +17,23 @@ export default defineConfig({
         return null;
       }
     },
-    // Custom plugin to handle missing modules
+    // Custom plugin to handle module resolution
     {
-      name: 'handle-missing-modules',
-      resolveId(id) {
-        // If the module is one of the React Admin modules we've marked as external,
-        // return a virtual module that exports an empty object
-        if (id === 'ra-ui-materialui' || id === 'ra-core' || id === 'ra-language-english') {
-          return { id, external: true };
+      name: 'module-resolver',
+      resolveId(id, importer) {
+        // Handle bare module specifiers for our shims
+        if (id === 'react-admin') {
+          return path.resolve(__dirname, 'src/shims/react-admin.js');
+        }
+        if (id === 'ra-ui-materialui') {
+          return path.resolve(__dirname, 'src/shims/ra-ui-materialui.js');
+        }
+        if (id === 'ra-core') {
+          return path.resolve(__dirname, 'src/shims/ra-core.js');
+        }
+        if (id === 'firebase' || id === 'firebase/app' || id === 'firebase/auth' ||
+            id === 'firebase/messaging' || id === 'firebase/analytics') {
+          return path.resolve(__dirname, 'src/shims/firebase.js');
         }
         return null;
       }
@@ -59,13 +68,8 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Mark React Admin packages as external to avoid bundling issues
-      external: [
-        'react-admin',
-        'ra-ui-materialui',
-        'ra-core',
-        'ra-language-english'
-      ],
+      // Don't mark any packages as external to ensure all dependencies are bundled
+      external: [],
       output: {
         // Implement manual chunks for better code splitting
         manualChunks: {
@@ -73,7 +77,13 @@ export default defineConfig({
           'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
           'vendor-firebase': ['firebase'],
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-utils': ['date-fns', 'zod', 'axios']
+          'vendor-utils': ['date-fns', 'zod', 'axios'],
+          'vendor-shims': [
+            './src/shims/firebase.js',
+            './src/shims/ra-core.js',
+            './src/shims/ra-ui-materialui.js',
+            './src/shims/react-admin.js'
+          ]
         }
       }
     },
@@ -92,33 +102,17 @@ export default defineConfig({
     }
   },
   resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__dirname, 'src') },
-      // Use our shim for ra-ui-materialui
-      { find: 'ra-ui-materialui', replacement: path.resolve(__dirname, 'src/shims/ra-ui-materialui.js') },
-      // Also handle the case where it's imported from node_modules
-      { find: /^ra-ui-materialui$/, replacement: path.resolve(__dirname, 'src/shims/ra-ui-materialui.js') },
-      // Use our shim for ra-core
-      { find: 'ra-core', replacement: path.resolve(__dirname, 'src/shims/ra-core.js') },
-      // Also handle the case where it's imported from node_modules
-      { find: /^ra-core$/, replacement: path.resolve(__dirname, 'src/shims/ra-core.js') },
-      // Use our shim for react-admin
-      { find: 'react-admin', replacement: path.resolve(__dirname, 'src/shims/react-admin.js') },
-      // Also handle the case where it's imported from node_modules
-      { find: /^react-admin$/, replacement: path.resolve(__dirname, 'src/shims/react-admin.js') },
-      // Use our shim for firebase
-      { find: 'firebase', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
-      // Also handle the case where it's imported from node_modules
-      { find: /^firebase$/, replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
-      // Handle firebase/app
-      { find: 'firebase/app', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
-      // Handle firebase/auth
-      { find: 'firebase/auth', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
-      // Handle firebase/messaging
-      { find: 'firebase/messaging', replacement: path.resolve(__dirname, 'src/shims/firebase.js') },
-      // Handle firebase/analytics
-      { find: 'firebase/analytics', replacement: path.resolve(__dirname, 'src/shims/firebase.js') }
-    ]
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      'react-admin': path.resolve(__dirname, 'src/shims/react-admin.js'),
+      'ra-ui-materialui': path.resolve(__dirname, 'src/shims/ra-ui-materialui.js'),
+      'ra-core': path.resolve(__dirname, 'src/shims/ra-core.js'),
+      'firebase': path.resolve(__dirname, 'src/shims/firebase.js'),
+      'firebase/app': path.resolve(__dirname, 'src/shims/firebase.js'),
+      'firebase/auth': path.resolve(__dirname, 'src/shims/firebase.js'),
+      'firebase/messaging': path.resolve(__dirname, 'src/shims/firebase.js'),
+      'firebase/analytics': path.resolve(__dirname, 'src/shims/firebase.js')
+    }
   },
   server: {
     port: 5173,

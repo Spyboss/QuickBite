@@ -81,9 +81,6 @@ export const Resource = createComponent('Resource');
 export const Admin = createComponent('Admin');
 export const Logout = createComponent('Logout');
 export const CreateView = createComponent('CreateView');
-export const EditView = createComponent('EditView');
-export const ShowView = createComponent('ShowView');
-export const ListView = createComponent('ListView');
 export const AutocompleteArrayInput = createComponent('AutocompleteArrayInput');
 
 // Export a default object with all the components
