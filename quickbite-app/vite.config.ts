@@ -20,7 +20,7 @@ export default defineConfig({
     // Custom plugin to handle module resolution
     {
       name: 'module-resolver',
-      resolveId(id, importer) {
+      resolveId(id) {
         // Handle bare module specifiers for our shims
         if (id === 'react-admin') {
           return path.resolve(__dirname, 'src/shims/react-admin.js');
