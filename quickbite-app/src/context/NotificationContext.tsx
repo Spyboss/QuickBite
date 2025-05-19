@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState, useCallback } from 'react'; // Removed useContext, Added useCallback
 import type { ReactNode } from 'react';
-import { messaging } from '../firebase';
-import { getToken } from 'firebase/messaging';
+import { getToken, getMessaging } from '../shims/firebase';
 // import { supabase } from '../supabaseClient'; // Unused import
 import { useAuth } from '../hooks/useAuth'; // Updated import path
 
@@ -59,6 +58,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
             }
 
             // In production, try to get a real token
+            const messaging = getMessaging();
             const currentToken = await getToken(messaging, {
               vapidKey: vapidKey || undefined,
               serviceWorkerRegistration: swRegistration
