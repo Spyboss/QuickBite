@@ -4,8 +4,3 @@ compatibility_date = "2025-05-18"
 
 # This is the directory that will be deployed to Cloudflare Pages
 pages_build_output_dir = "quickbite-app/dist"
-
-# Build configuration
-[build]
-command = "cd quickbite-app && npm install && npm run build"
-node_version = "22.1.0"
